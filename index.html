@@ -27,6 +27,7 @@
         align-items: center;
         background-color: #f8fafc;
         transition: opacity 0.5s ease-out;
+        z-index: 1000;
       }
       .dark #loading-screen {
         background-color: #0f172a;
@@ -45,21 +46,33 @@
       }
     </style>
     <script>
-      window.onerror = function(msg, url, lineNo, columnNo, error) {
+      function showError(title, details) {
         var errorDiv = document.getElementById('startup-error');
+        var loader = document.getElementById('loading-screen');
         if (errorDiv) {
           errorDiv.style.display = 'block';
-          errorDiv.innerHTML = '<h3>⚠️ 启动错误检测报告</h3><p>检测到程序运行受阻，详细信息如下：</p><pre style="background:#fef2f2; padding:10px; border-radius:6px; border:1px solid #fee2e2;">' + 
-            '错误信息: ' + msg + '\n' + 
-            '文件位置: ' + (url || 'unknown') + '\n' + 
-            '行号列号: ' + lineNo + ':' + columnNo + '\n' + 
-            '堆栈追踪: ' + (error ? error.stack : '无') + '</pre><p>请检查控制台(F12)获取更多细节。</p>';
+          errorDiv.innerHTML += '<div style="margin-bottom: 20px;"><h3>⚠️ ' + title + '</h3>' +
+            '<pre style="background:#fef2f2; padding:10px; border-radius:6px; border:1px solid #fee2e2; white-space: pre-wrap; word-break: break-all;">' + 
+            details + '</pre></div>';
         }
-        // 隐藏加载动画以免遮挡错误
-        var loader = document.getElementById('loading-screen');
-        if(loader) loader.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+      }
+
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        showError('启动错误检测报告', 
+          '错误信息: ' + msg + '\n' + 
+          '文件位置: ' + (url || 'unknown') + '\n' + 
+          '行号列号: ' + lineNo + ':' + columnNo + '\n' + 
+          '堆栈追踪: ' + (error ? error.stack : '无')
+        );
         return false;
       };
+
+      window.addEventListener('unhandledrejection', function(event) {
+        showError('未捕获的 Promise 异常', 
+          '原因: ' + (event.reason ? (event.reason.stack || event.reason) : 'Unknown')
+        );
+      });
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
