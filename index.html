@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>小智1.0 | 陈真同学开发</title>
     
-    <!-- 1. 全局错误捕获脚本：如果白屏，这里会显示具体报错原因 -->
+    <!-- 1. 全局错误捕获脚本 -->
     <style>
       #startup-error {
         display: none;
@@ -80,9 +80,11 @@
         // 如果加载层还在 DOM 中（说明 React 没把它替换掉）
         if (loader && document.getElementById('root').contains(loader)) {
            showError('启动超时警告', 
-             '应用长时间停留在加载界面，可能是因为网络原因导致核心库(esm.sh)无法下载。\n\n' +
-             '检测到您之前的日志含有 SOCKS 错误，请检查您的网络代理设置。\n' +
-             '如果您的网络正常，可能是 CDN 暂时被阻断。'
+             '应用长时间停留在加载界面，说明代码未能成功执行。\n\n' +
+             '可能的原因：\n' +
+             '1. 您的网络无法访问 esm.sh (海外 CDN)。\n' +
+             '2. 您的网络代理配置错误 (日志显示 ERR_SOCKS_CONNECTION_FAILED)。\n' +
+             '3. 请尝试关闭代理或更换网络环境后刷新重试。'
            );
         }
       }, 8000);
