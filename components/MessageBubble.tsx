@@ -23,24 +23,24 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
         {/* Content */}
         <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
-          <div className={`px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed overflow-hidden ${
+          <div className={`px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed overflow-hidden transition-colors duration-300 ${
             isUser 
               ? 'bg-indigo-600 text-white rounded-br-none' 
-              : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+              : 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 border border-gray-100 dark:border-slate-700 rounded-bl-none'
           }`}>
-            <div className={`markdown-content ${isUser ? 'prose-invert' : 'prose-stone'}`}>
+            <div className={`markdown-content ${isUser ? 'prose-invert' : 'prose-stone dark:prose-invert'}`}>
               <ReactMarkdown 
                  components={{
                   code({node, className, children, ...props}) {
                     return (
-                      <code className={`${className} bg-black/10 rounded px-1 py-0.5`} {...props}>
+                      <code className={`${className} bg-black/10 dark:bg-white/10 rounded px-1 py-0.5`} {...props}>
                         {children}
                       </code>
                     )
                   },
                   pre({node, children, ...props}) {
                     return (
-                      <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto my-2 text-xs" {...props}>
+                      <pre className="bg-gray-900 dark:bg-black text-gray-100 p-3 rounded-lg overflow-x-auto my-2 text-xs" {...props}>
                         {children}
                       </pre>
                     )

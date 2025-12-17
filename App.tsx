@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { SendHorizontal, Sparkles, Trash2, AlertCircle, GraduationCap, BookOpen, BrainCircuit, ListTodo } from 'lucide-react';
+import { SendHorizontal, Sparkles, Trash2, AlertCircle, GraduationCap, BookOpen, BrainCircuit, ListTodo, Sun, Moon } from 'lucide-react';
 import { Message, Role } from './types';
 import { sendMessageStream } from './services/api';
 import { MessageBubble } from './components/MessageBubble';
@@ -40,8 +40,33 @@ export default function App() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Initialize Theme
+  useEffect(() => {
+    // Check local storage or system preference
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (isDarkMode) {
+      document.documentElement.classList.remove('dark');
+      localStorage.theme = 'light';
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.theme = 'dark';
+      setIsDarkMode(true);
+    }
+  };
 
   // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -142,29 +167,40 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
       {/* Header */}
-      <header className="flex-none bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+      <header className="flex-none bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm transition-colors duration-300">
         <div className="flex items-center gap-3">
           <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-xl text-white shadow-md">
             <GraduationCap size={22} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-bold text-slate-800 text-lg leading-tight tracking-tight">小智 1.0</h1>
-              <span className="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-200 uppercase">Pro</span>
+              <h1 className="font-bold text-slate-800 dark:text-white text-lg leading-tight tracking-tight">小智 1.0</h1>
+              <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-800 uppercase">Pro</span>
             </div>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">陈真同学开发 · 期末复习神器</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">陈真同学开发 · 期末复习神器</p>
           </div>
         </div>
-        <button
-          onClick={handleClearChat}
-          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors group relative"
-          title="清空对话"
-        >
-          <Trash2 size={20} />
-          <span className="absolute hidden group-hover:block right-0 top-full mt-1 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">清空记录</span>
-        </button>
+        
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-slate-400 hover:text-indigo-500 dark:text-slate-500 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            title={isDarkMode ? "切换至日间模式" : "切换至护眼模式"}
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+          
+          <button
+            onClick={handleClearChat}
+            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors group relative"
+            title="清空对话"
+          >
+            <Trash2 size={20} />
+            <span className="absolute hidden group-hover:block right-0 top-full mt-1 bg-slate-800 dark:bg-slate-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20">清空记录</span>
+          </button>
+        </div>
       </header>
 
       {/* Messages Area */}
@@ -180,7 +216,7 @@ export default function App() {
                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-emerald-600 text-white shadow-sm">
                    <Sparkles size={16} />
                  </div>
-                 <div className="flex items-center bg-white border border-slate-100 rounded-2xl rounded-bl-none shadow-sm px-4 py-3">
+                 <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl rounded-bl-none shadow-sm px-4 py-3">
                    <TypingIndicator />
                  </div>
                </div>
@@ -188,7 +224,7 @@ export default function App() {
           )}
 
           {error && (
-            <div className="mx-auto my-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700 max-w-lg shadow-sm">
+            <div className="mx-auto my-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3 text-red-700 dark:text-red-300 max-w-lg shadow-sm">
               <AlertCircle size={20} />
               <div>
                 <p className="text-sm font-bold">出错了</p>
@@ -202,7 +238,7 @@ export default function App() {
       </main>
 
       {/* Input Area */}
-      <footer className="flex-none bg-white border-t border-slate-200 p-4">
+      <footer className="flex-none bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 transition-colors duration-300">
         <div className="max-w-3xl mx-auto space-y-3">
           
           {/* Suggestion Chips */}
@@ -212,7 +248,7 @@ export default function App() {
                 <button
                   key={i}
                   onClick={() => handleSendMessage(s.text)}
-                  className="flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 border border-slate-200 hover:border-indigo-200 rounded-full text-xs font-medium transition-colors duration-200"
+                  className="flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200 dark:border-slate-600 hover:border-indigo-200 dark:hover:border-indigo-500 rounded-full text-xs font-medium transition-colors duration-200"
                 >
                   <s.Icon size={14} />
                   {s.text}
@@ -221,14 +257,14 @@ export default function App() {
             </div>
           )}
 
-          <div className="relative flex items-end gap-2 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all p-2 shadow-sm">
+          <div className="relative flex items-end gap-2 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-600 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 dark:focus-within:ring-indigo-900/30 transition-all p-2 shadow-sm">
             <textarea
               ref={textareaRef}
               value={inputValue}
               onChange={handleInput}
               onKeyDown={handleKeyDown}
               placeholder="问问小智关于期末复习的问题..."
-              className="w-full bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-2.5 px-3 text-slate-800 placeholder-slate-400 no-scrollbar"
+              className="w-full bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-2.5 px-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 no-scrollbar"
               rows={1}
             />
             <button
@@ -237,13 +273,13 @@ export default function App() {
               className={`mb-1 p-2 rounded-xl flex-shrink-0 transition-all duration-200 ${
                 inputValue.trim() && !isLoading
                   ? 'bg-indigo-600 text-white shadow-md hover:bg-indigo-700 hover:scale-105 active:scale-95'
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
               }`}
             >
               <SendHorizontal size={20} />
             </button>
           </div>
-          <div className="flex justify-between items-center text-[10px] text-slate-400 px-2">
+          <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 px-2">
             <span>🚀 免费使用 | 全知全能</span>
             <span>Made with ❤️ by 陈真同学</span>
           </div>
